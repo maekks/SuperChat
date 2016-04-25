@@ -23,8 +23,10 @@ var uristring =
     'mongodb://localhost/myapp'
     ;
 
-io.set('transports', ['xhr-polling']);
-io.set('polling duration', 10);
+io.configure(function () { 
+  io.set("transports", ["xhr-polling"]); 
+  io.set("polling duration", 10); 
+}); 
 
 io.on('connection', function(socket){
     socket.on('chat message', function(msg){
