@@ -17,6 +17,7 @@ var id = 0;
 var name;
 var WholePassword;
 var WholeUserid;
+var mongodbUri = 'mongodb://heroku_8l0lqjkg:b9ashk8decgl1p350mdr7hloeg@ds019481.mlab.com:19481/heroku_8l0lqjkg';
 
 io.on('connection', function(socket){
     socket.on('chat message', function(msg){
@@ -43,7 +44,7 @@ server.listen(3000, function(){
   console.log('listening on *:3000');
 });
 
-mongoose.connect("mongodb://localhost/myapp");
+mongoose.connect(mongodbUri);
 var UserSchema = new mongoose.Schema({
     id: Number,
     username: String,
