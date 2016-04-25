@@ -20,7 +20,9 @@ var WholeUserid;
 var uristring =
     process.env.MONGODB_URI ||
     process.env.MONGOLAB_URL ||
-    'mongodb://heroku_8l0lqjkg:b9ashk8decgl1p350mdr7hloeg@ds019481.mlab.com:19481/heroku_8l0lqjkg';
+    'mongodb://heroku_8l0lqjkg:b9ashk8decgl1p350mdr7hloeg@ds019481.mlab.com:19481/heroku_8l0lqjkg' ||
+    'mongodb://localhost/myapp'
+    ;
 
 io.on('connection', function(socket){
     socket.on('chat message', function(msg){
