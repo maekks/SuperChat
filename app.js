@@ -13,8 +13,8 @@ var googleTranslate = require('google-translate')("AIzaSyDLYBE-s5itd-S3ts-ngRubB
 var app = express();
 var server = http.createServer(app);
 var socket = require('socket.io')({
-  transports  : ['xhr-polling'],
-  polling duration : 10
+  "transports"  : ['xhr-polling'],
+  "polling duration" : 10
 });
 var io = socket.listen(server);
 var id = 0;
