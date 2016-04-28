@@ -1,5 +1,5 @@
 /*
-Module Dependencies 
+Module Dependencies
 */
 var express = require('express'),
     http = require('http'),
@@ -12,10 +12,7 @@ var googleTranslate = require('google-translate')("AIzaSyDLYBE-s5itd-S3ts-ngRubB
 
 var app = express();
 var server = http.createServer(app);
-var io = require('socket.io')({
-    'transports': ["xhr-polling"],
-    'polling duration': 10
-}).listen(server);
+var io = require('socket.io').listen(server);
 var id = 0;
 var name;
 var WholePassword;
@@ -26,14 +23,19 @@ var uristring =
     'mongodb://localhost/myapp'
     ;
 
-io.on('connection', function(socket){
+io.configure(function () {
+  io.set("transports", ["xhr-polling"]);
+  io.set("polling duration", 20);
+});
+
+io.sockets.on('connection', function(socket){
     socket.on('chat message', function(msg){
         googleTranslate.detectLanguage(msg, function(err, detection) {
             console.log(detection.language);
             //console.log(true);
             // if(detection.language == 'es'){
             // io.emit('chat message', msg);
-            // }else 
+            // }else
             if(detection.language != 'en'){
             io.emit('chat message', msg);
                 googleTranslate.translate(msg, '' , 'en', function(err, translation) {
@@ -42,7 +44,7 @@ io.on('connection', function(socket){
         }else{
             io.emit('chat message', msg);
         };
-        });     
+        });
     });
 });
 
@@ -61,7 +63,7 @@ var UserSchema = new mongoose.Schema({
 
 var User = mongoose.model('users', UserSchema);
 /*
-Middlewares and configurations 
+Middlewares and configurations
 */
 app.configure(function () {
     app.use(express.bodyParser());
@@ -90,7 +92,7 @@ Helper Functions
 */
 function authenticate(name, pass, fn) {
     if (!module.parent) console.log('%s have loged in, its password is %s', name, pass);
- 
+
     User.findOne({
         username: name
     },
@@ -136,7 +138,7 @@ function userExist(req, res, next) {
 Routes
 */
 app.get("/", function (req, res) {
-    
+
     if (req.session.user) {
         var userstring = "";
         User.find(function (err, users){
@@ -153,7 +155,7 @@ app.get("/", function (req, res) {
             //res.send("Welcome " + req.session.user.username + "<br>" +"The id is " + WholeUserid + "<br>" +"The password is " + WholePassword + "<br>" + "users has registered: <br>" + userstring + "<br>" + "<a href='/logout'>logout</a>" + "<br>" + "<a href='/chat'>Chatting Page</a>");
             res.render("home",{name:req.session.user.username, WholePassword: WholePassword, userstring: userlist});
             });
-                sessionName = req.session.user.username; 
+                sessionName = req.session.user.username;
     } else {
         res.redirect("/login");
     }
@@ -180,7 +182,7 @@ app.post("/signup", userExist, function (req, res) {
     var password = req.body.password;
     WholePassword = req.body.password;
     var username = req.body.username;
-    
+
     hash(password, function (err, salt, hash) {
         if (err) throw err;
         id++;
@@ -206,8 +208,8 @@ app.post("/signup", userExist, function (req, res) {
                 }
             });
         });
-        
-        
+
+
     });
 });
 
@@ -239,9 +241,8 @@ app.get('/logout', function (req, res) {
     });
 });
 
-app.get('/chat', function(req,res){ 
-    
+app.get('/chat', function(req,res){
+
     //res.render("chat",{name:"Vince"});
     res.render("chat",{color:"#FFF", name: sessionName});
 });
-
