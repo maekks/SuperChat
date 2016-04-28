@@ -23,12 +23,9 @@ var uristring =
     'mongodb://localhost/myapp'
     ;
 
-io.configure(function () {
-  io.set("transports", ["xhr-polling"]);
-  io.set("polling duration", 20);
-});
-
-io.sockets.on('connection', function(socket){
+io.on('connection', function(socket){
+    io.set("transports", ["xhr-polling"]);
+    io.set("polling duration", 20);
     socket.on('chat message', function(msg){
         googleTranslate.detectLanguage(msg, function(err, detection) {
             console.log(detection.language);
