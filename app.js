@@ -21,11 +21,13 @@ var id = 0;
 var name;
 var WholePassword;
 var WholeUserid;
+
 var uristring =
     process.env.MONGODB_URI ||
     process.env.MONGOLAB_URL ||
     'mongodb://localhost/myapp'
     ;
+
 
 io.on('connection', function(socket){
     io.set("transports", ["xhr-polling"]);
@@ -52,7 +54,9 @@ io.on('connection', function(socket){
 
 server.listen(process.env.PORT || 5000);
 
+
 mongoose.connect(uristring);
+
 var UserSchema = new mongoose.Schema({
     id: Number,
     username: String,
@@ -95,6 +99,7 @@ function authenticate(name, pass, fn) {
 
     //if (!module.parent) console.log('%s have loged in, its password is %s', name, pass);
 
+
     User.findOne({
         username: name
     },
@@ -120,7 +125,6 @@ function requiredAuthentication(req, res, next) {
     } else {
         req.session.error = 'Access denied!';
         res.redirect('/login');
-
     }
 }
 
@@ -131,8 +135,13 @@ function userExist(req, res, next) {
         if (count === 0) {
             next();
         } else {
-            req.session.error = "User Exist"
+            req.session.error = "User Exist";
+            // function myFunction() {
+            //   alert("I am an alert box!");
+            // }
+            // document.write ("This is a warning message!");
             res.redirect("/signup");
+
         }
     });
 }
@@ -153,8 +162,8 @@ app.get("/", function (req, res) {
                     return output;
             }
             var userlist = FetchUsername(users, "username");
-            //userstring = userlist.join("-");
-            //console.log(typeof userstring);
+            userstring = userlist.join("-");
+            console.log(typeof userstring);
             //res.send("Welcome " + req.session.user.username + "<br>" +"The id is " + WholeUserid + "<br>" +"The password is " + WholePassword + "<br>" + "users has registered: <br>" + userstring + "<br>" + "<a href='/logout'>logout</a>" + "<br>" + "<a href='/chat'>Chatting Page</a>");
             res.render("home",{name:req.session.user.username, WholePassword: WholePassword, userstring: userlist});
             });
@@ -205,7 +214,7 @@ app.post("/signup", userExist, function (req, res) {
                 if(user){
                     req.session.regenerate(function(){
                         req.session.user = user;
-                        req.session.success = 'Authenticated as ' + user.username + ' click to <a href="/logout">logout</a>. ' + ' You may now can chat <a href="/restricted">/restricted</a>.';
+                        //req.session.success = 'Authenticated as ' + user.username + ' click to <a href="/logout">logout</a>. ' + ' You may now can chat <a href="/restricted">/restricted</a>.';
                         res.redirect('/');
                     });
                 }
@@ -228,7 +237,7 @@ app.post("/login", function (req, res) {
             req.session.regenerate(function () {
 
                 req.session.user = user;
-                req.session.success = 'Authenticated as ' + user.username + ' click to <a href="/logout">logout</a>. ' + ' You may now access <a href="/restricted">/restricted</a>.';
+                //req.session.success = 'Authenticated as ' + user.username + ' click to <a href="/logout">logout</a>. ' + ' You may now access <a href="/restricted">/restricted</a>.';
                 res.redirect('/');
             });
         } else {
@@ -244,7 +253,8 @@ app.get('/logout', function (req, res) {
     });
 });
 
-app.get('/chat', function(req,res){
+
+app.get('/chat', requiredAuthentication, function(req,res){
 
     //res.render("chat",{name:"Vince"});
     res.render("chat",{color:"#FFF", name: sessionName});
