@@ -84,7 +84,7 @@ app.use(function (req, res, next) {
     delete req.session.error;
     delete req.session.success;
     res.locals.message = '';
-    if (err) res.locals.message = '<p class="msg error">' + err + '</p>';
+    if (err) res.locals.message = err;
     if (msg) res.locals.message = '<p class="msg success">' + msg + '</p>';
     next();
 });
@@ -92,7 +92,8 @@ app.use(function (req, res, next) {
 Helper Functions
 */
 function authenticate(name, pass, fn) {
-    if (!module.parent) console.log('%s have loged in, its password is %s', name, pass);
+
+    //if (!module.parent) console.log('%s have loged in, its password is %s', name, pass);
 
     User.findOne({
         username: name
@@ -119,6 +120,7 @@ function requiredAuthentication(req, res, next) {
     } else {
         req.session.error = 'Access denied!';
         res.redirect('/login');
+
     }
 }
 
@@ -151,8 +153,8 @@ app.get("/", function (req, res) {
                     return output;
             }
             var userlist = FetchUsername(users, "username");
-            userstring = userlist.join("-");
-            console.log(typeof userstring);
+            //userstring = userlist.join("-");
+            //console.log(typeof userstring);
             //res.send("Welcome " + req.session.user.username + "<br>" +"The id is " + WholeUserid + "<br>" +"The password is " + WholePassword + "<br>" + "users has registered: <br>" + userstring + "<br>" + "<a href='/logout'>logout</a>" + "<br>" + "<a href='/chat'>Chatting Page</a>");
             res.render("home",{name:req.session.user.username, WholePassword: WholePassword, userstring: userlist});
             });
